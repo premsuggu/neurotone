@@ -1,0 +1,14 @@
+librosa
+praat-parselmouth
+opensmile
+scikit-learn
+xgboost<2.0.0
+shap
+torch
+transformers
+flask
+pandas
+numpy
+matplotlib
+seaborn
+reportlab

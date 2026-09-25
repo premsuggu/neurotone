@@ -70,7 +70,6 @@ def build_pdf():
     )
     
     # Consistent, formal typographic hierarchy using standard Helvetica
-    # Uniform text color: dark formal charcoal (#1A1A1A)
     PRIMARY_COLOR = colors.HexColor("#1A1A1A")
     BORDER_COLOR = colors.HexColor("#D1D5DB")
     ROW_BG_LIGHT = colors.HexColor("#F9FAFB")
@@ -177,8 +176,8 @@ def build_pdf():
     
     meta_data = [
         [
-            Paragraph("<b>Document Version:</b> 1.0 (Formal)", meta_style),
-            Paragraph("<b>Current Status:</b> Phase 3 Completed (Benchmark & Visual Deck)", meta_style)
+            Paragraph("<b>Document Version:</b> 1.1 (Clinical Risk Update)", meta_style),
+            Paragraph("<b>Current Status:</b> Phase 3.5 (Continuous Risk Scoring Implemented)", meta_style)
         ],
         [
             Paragraph("<b>Project Lead:</b> NeuroTone Research & Engineering Team", meta_style),
@@ -266,7 +265,7 @@ def build_pdf():
         [Paragraph("<b>Directory / File</b>", table_header_style), Paragraph("<b>Engineering Role & Contents</b>", table_header_style)],
         [Paragraph("data/raw/", table_cell_style), Paragraph("Immutable raw datasets: UCI Parkinson's benchmark, plus reserved folders for Italian and NeuroVoz corpora.", table_cell_style)],
         [Paragraph("data/processed/", table_cell_style), Paragraph("Standardized, cleaned datasets (uci_cleaned.csv) stripped of non-predictive string identifiers.", table_cell_style)],
-        [Paragraph("src/", table_cell_style), Paragraph("Core pipeline modules: data downloaders, cleaning scripts, and modular cross-validation evaluation engines.", table_cell_style)],
+        [Paragraph("src/", table_cell_style), Paragraph("Core pipeline: automated download, tabular data cleaning, cross-validation, and risk assessment (predict_risk.py).", table_cell_style)],
         [Paragraph("src/plotter/", table_cell_style), Paragraph("Visualization engine and clinical feature mapping (feature_mapping.py) for readable reporting.", table_cell_style)],
         [Paragraph("visualizations/", table_cell_style), Paragraph("High-resolution pitch-deck visual assets (300 DPI PNGs) and compressed distribution archives.", table_cell_style)],
         [Paragraph("docs/", table_cell_style), Paragraph("Documentation for context retention (project_context.md) and formal reports (report.pdf).", table_cell_style)],
@@ -351,7 +350,7 @@ def build_pdf():
     # =========================================================
     # PAGE 3: ML PIPELINE & CLINICAL PERFORMANCE
     # =========================================================
-    story.append(Paragraph("6. Machine Learning Pipeline & Clinical Evaluation", h1_style))
+    story.append(Paragraph("6. Machine Learning Pipeline, Probability Scoring & Performance", h1_style))
     story.append(HRFlowable(width="100%", thickness=0.75, color=BORDER_COLOR, spaceAfter=6, spaceBefore=0))
     story.append(Paragraph(
         "To ensure that our screening model generalizes reliably to new, unseen patients, all model evaluations were performed "
@@ -360,19 +359,44 @@ def build_pdf():
         "subset served as a blind test set, rotating until every sample had been evaluated out-of-fold.",
         body_style
     ))
+    
+    # Continuous Probability & 3-Tier Triage Subsection
     story.append(Paragraph(
-        "<b>Clinical Metrics vs. Raw Accuracy:</b> In a healthcare screening context, overall accuracy is a secondary metric. "
-        "Medical utility depends fundamentally on two clinical trade-offs:<br/>"
-        "• <b>Sensitivity (Recall for Class 1):</b> The proportion of actual Parkinson's patients correctly identified. A high sensitivity "
-        "ensures that individuals with neurological impairment are not falsely reassured (minimizing dangerous False Negatives).<br/>"
-        "• <b>Specificity (Recall for Class 0):</b> The proportion of healthy individuals correctly classified as healthy. High specificity "
-        "prevents unnecessary anxiety, diagnostic follow-ups, and specialist clinical backlogs (minimizing False Positives).<br/>"
-        "• <b>Area Under the ROC Curve (AUC):</b> Measures the classifier's overall discriminative power across all possible decision "
-        "thresholds, where 0.5 represents a coin flip and 1.0 represents perfect diagnostic separation.",
+        "<b>Continuous Probability Scoring & Three-Tier Clinical Triage:</b> Rather than outputting an abrupt, binary '0' (Healthy) "
+        "or '1' (Parkinson's), our inference engine (<code>src/predict_risk.py</code>) calculates continuous posterior probabilities "
+        "via <code>model.predict_proba()</code>. This enables nuanced clinical triage and longitudinal monitoring:",
         body_style
     ))
-    story.append(Spacer(1, 4))
     
+    triage_data = [
+        [Paragraph("<b>Probability Tier</b>", table_header_style), Paragraph("<b>Triage Category</b>", table_header_style), Paragraph("<b>Actionable Clinical Recommendation</b>", table_header_style)],
+        [
+            Paragraph("<b>0% to 30%</b>", table_cell_style),
+            Paragraph("<b>Low Risk</b>", table_cell_style),
+            Paragraph("Acoustic parameters match healthy vocal norms. No immediate follow-up needed. Routine annual check-up advised.", table_cell_style)
+        ],
+        [
+            Paragraph("<b>31% to 65%</b>", table_cell_style),
+            Paragraph("<b>Moderate / Inconclusive</b>", table_cell_style),
+            Paragraph("Mild micro-instability detected. Prompt user to re-record in 3–5 days to rule out temporary vocal fatigue or laryngitis.", table_cell_style)
+        ],
+        [
+            Paragraph("<b>66% to 100%</b>", table_cell_style),
+            Paragraph("<b>Elevated Risk</b>", table_cell_style),
+            Paragraph("Substantial tremor or chaotic signal entropy detected. Formal neurological and UPDRS clinical evaluation recommended.", table_cell_style)
+        ]
+    ]
+    triage_table = Table(triage_data, colWidths=[90, 110, 304])
+    triage_table.setStyle(TableStyle([
+        ('BOX', (0, 0), (-1, -1), 0.75, BORDER_COLOR),
+        ('INNERGRID', (0, 0), (-1, -1), 0.5, BORDER_COLOR),
+        ('BACKGROUND', (0, 0), (-1, 0), ROW_BG_LIGHT),
+        ('PADDING', (0, 0), (-1, -1), 3),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+    ]))
+    story.append(triage_table)
+    story.append(Spacer(1, 6))
+
     comp_data = [
         [Paragraph("<b>Performance Metric</b>", table_header_style), Paragraph("<b>Baseline Random Forest</b>", table_header_style), Paragraph("<b>Champion XGBoost Model</b>", table_header_style), Paragraph("<b>Clinical Interpretation & Real-World Impact</b>", table_header_style)],
         [
@@ -405,11 +429,11 @@ def build_pdf():
         ('BOX', (0, 0), (-1, -1), 0.75, BORDER_COLOR),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, BORDER_COLOR),
         ('BACKGROUND', (0, 0), (-1, 0), ROW_BG_LIGHT),
-        ('PADDING', (0, 0), (-1, -1), 4),
+        ('PADDING', (0, 0), (-1, -1), 3.5),
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
     ]))
     story.append(comp_table)
-    story.append(Spacer(1, 6))
+    story.append(Spacer(1, 5))
     
     story.append(Paragraph(
         "<b>The Engineering Breakthrough (Managing Imbalance):</b> While the initial Random Forest baseline delivered impressive "
@@ -494,8 +518,8 @@ def build_pdf():
         Paragraph(
             "<b>Conclusion & Takeaway:</b> Project NeuroTone demonstrates that vocal acoustic biomarkers alone can differentiate "
             "Parkinson's Disease patients from healthy controls with remarkable efficacy (<b>92.3% accuracy, 0.9738 AUC, 95.2% sensitivity</b>). "
-            "By pairing clinical-grade discriminative power with explainable visual interpretations, NeuroTone provides a proven, "
-            "scalable foundation for accessible, decentralized early neurological screening.",
+            "By pairing clinical-grade discriminative power with continuous probability triage and explainable visual interpretations, NeuroTone "
+            "provides a proven, scalable foundation for accessible, decentralized early neurological screening.",
             callout_style
         )
     ]]

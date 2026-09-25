@@ -30,6 +30,15 @@ Evaluated using rigorous **Stratified 5-Fold Cross-Validation** on the benchmark
 
 > **The Imbalance Breakthrough:** The initial Random Forest model had a high false positive rate on healthy participants (~30.7%). By transitioning to Extreme Gradient Boosting (XGBoost) and dynamically configuring `scale_pos_weight = 48 / 147 = 0.3265`, we penalized errors on the minority healthy cohort, boosting specificity by **+14.2%** without degrading sensitivity.
 
+### 2.1 Continuous Probability Scoring & 3-Tier Clinical Triage
+Rather than outputting a blunt, static binary label (`0` or `1`), the screening engine (`src/predict_risk.py`) produces calibrated continuous posterior probabilities mapped to actionable clinical triage tiers:
+
+| Probability Tier | Clinical Category | Actionable Recommendation |
+| :---: | :---: | :--- |
+| **0% – 30%** | **Low Risk** | Vocal acoustic patterns match healthy norms. Routine annual screening advised. |
+| **31% – 65%** | **Moderate / Inconclusive** | Mild micro-instability detected. Prompt re-recording in 3–5 days to rule out temporary vocal fatigue. |
+| **66% – 100%** | **Elevated Risk** | Significant vocal micro-tremors and entropy detected. Formal neurological and UPDRS evaluation recommended. |
+
 ---
 
 ## 3. Project Architecture
@@ -58,6 +67,7 @@ neurotone/
 │   ├── evaluation.py             # Modular Stratified 5-Fold Cross-Validation engine
 │   ├── train_rf.py               # Baseline Random Forest training & evaluation
 │   ├── train_xgb.py              # Champion XGBoost training with imbalance reweighting
+│   ├── predict_risk.py           # Continuous probability scoring & 3-tier clinical triage engine
 │   ├── generate_report.py        # Automated ReportLab formal PDF generation engine
 │   └── plotter/
 │       ├── __init__.py           # Plotter package marker
@@ -148,14 +158,17 @@ python src/train_rf.py
 # 5. Train and evaluate champion XGBoost model
 python src/train_xgb.py
 
-# 6. Generate the visual pitch deck assets
+# 6. Run continuous risk scoring & clinical triage demo
+python src/predict_risk.py
+
+# 7. Generate the visual pitch deck assets
 python src/plotter/plot_01_shap.py
 python src/plotter/plot_02_importance.py
 python src/plotter/plot_03_individual.py
 python src/plotter/plot_04_metrics.py
 python src/plotter/plot_05_boxplots.py
 
-# 7. Compile the formal PDF report
+# 8. Compile the formal PDF report
 python src/generate_report.py
 ```
 

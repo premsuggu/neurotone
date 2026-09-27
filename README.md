@@ -174,19 +174,7 @@ python src/generate_report.py
 
 ---
 
-## 7. Project Roadmap
-
-* [x] **Phase 1: Environment Setup & Acquisition** — Modular directory hierarchy and UCI benchmark data acquisition.
-* [x] **Phase 2: Exploratory Data Analysis & Cleansing** — Imbalance identification, feature extraction, and validation schema.
-* [x] **Phase 3: Baseline & Advanced Tabular Modeling** — Cross-validated Random Forest and XGBoost with clinical metrics.
-* [x] **Phase 3.5: Explainability & Pitch Assets** — SHAP explanations, visual pitch deck, and comprehensive stakeholder PDF report.
-* [ ] **Phase 4: Raw Audio Ingestion & Acoustic Extraction** — Process multi-lingual audio files (`.wav`) from Italian and NeuroVoz datasets using `praat-parselmouth`, `opensmile`, and `librosa`.
-* [ ] **Phase 5: Mobile Edge Deployment** — Export the optimized classifier to ONNX/Flask microservice for sub-second, on-device mobile phone screening.
-
----
-
 ## 8. License & Acknowledgments
 
 * **License:** Distributed under the MIT License.
 * **Dataset Attribution:** Max Little, Patrick McSharry, Stephen Roberts, Declan Costello, Irene Moroz (2007). *Exploiting Nonlinear Recurrence and Fractal Scaling Properties for Voice Disorder Detection*, BioMedical Engineering OnLine.
-* **Research & Development:** NeuroTone Interdisciplinary Research Team.
